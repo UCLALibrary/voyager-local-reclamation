@@ -1,0 +1,62 @@
+#!/bin/sh
+# Retrieve OCLC files from ZAS (SRLF) cross-reference processing
+
+# For cron
+BIN=/opt/local/bin
+. ${BIN}/vger_getenv
+
+# Must supply job of files to retrieve
+if [ -z "$1" ]; then
+  echo "Usage: $0 job_number"
+  exit 1
+else
+  JOB=$1
+fi
+
+# All happens here
+DIR=/m1/voyager/ucladb/local/reclamation/zas
+cd ${DIR}
+
+# FTP the files from OCLC
+USER=tzas1
+PWD=`${BIN}/get_value.pl ${BIN}/oclc_credentials ${USER}`
+(
+  echo "user ${USER} ${PWD}"
+  echo "cd 'edx.ebsb.zas'"
+  echo "bin"
+  echo "mget RECORDS.*.R${JOB}.*"
+  echo "ascii"
+  echo "mget REPORT.*.R${JOB}.*"
+  echo "quit"
+) | ftp -i -n -v edx.oclc.org
+
+# Load xrefs into database
+SCHEMA=vger_report
+CTL_FILE=load_xrefs.ctl
+# Normally just one CXREF file but OK to load all
+for LOAD_FILE in `ls -1 REPORT.*.R${JOB}.CXREF 2>/dev/null`; do
+  if [ -s ${LOAD_FILE} ]; then
+    ${BIN}/vger_sqlldr_load ${SCHEMA} ${LOAD_FILE} ${CTL_FILE}
+  fi
+done
+
+# Check for xrefs for records no longer in Voyager, report to Sara Layne
+SQL=zas_matches_missing
+${BIN}/vger_sqlplus_run ${SCHEMA} ${SQL}
+if [ -s ${SQL}.out ]; then
+  cat ${SQL}.out | mailx -s "ZAS xrefs no longer in Voyager" akohler@library.ucla.edu
+else
+  echo "No ZAS xrefs no longer in Voyager"
+fi
+rm ${SQL}.out
+
+# Make text versions of MARC files
+#for MARC_FILE in `ls -1 RECORDS.* 2>/dev/null`; do
+#  if [ -s ${MARC_FILE} ]; then
+#    ${BIN}/marcview ${MARC_FILE} > ${MARC_FILE}.txt
+#  fi
+#done
+
+# Archive files
+mv R* archive/
+

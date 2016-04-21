@@ -1,0 +1,15 @@
+#!/bin/sh
+
+SYMBOL=CLU
+PROJECT=P011890
+
+for FILE in DATA.*; do
+  LABELFILE=`echo ${FILE} | sed "s/DATA/LABEL/"`
+  COUNT=`marcview ${FILE} | grep "^001" | wc -l | sed "s/ //g"`
+  echo "DAT  20090328000000.0" > ${LABELFILE}
+  echo "RBF  ${COUNT}" >> ${LABELFILE}
+  echo "DSN  ${FILE}" >> ${LABELFILE}
+  echo "ORS  ${SYMBOL}" >> ${LABELFILE}
+  echo "FDI  ${PROJECT}" >> ${LABELFILE} 
+done
+
