@@ -1,10 +1,10 @@
 #!/bin/sh
-. /opt/local/bin/vger_getenv
+. /usr/local/bin/vger_getenv
 
 REPORTSDIR=/m1/incoming/reclamation/mellon1
 BASE=${VGER_BASE}/ucladb
 
-/opt/local/bin/vger_sqlplus_run ucla_preaddb mellon1_extract
+/usr/local/bin/vger_sqlplus_run ucla_preaddb mellon1_extract
 
 ${BASE}/sbin/Pmarcexport -omellon1_extract.mrc -rB -mM -tmellon1_extract.out -q
 

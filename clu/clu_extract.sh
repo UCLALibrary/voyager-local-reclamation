@@ -1,5 +1,5 @@
 #!/bin/sh
-. /opt/local/bin/vger_getenv
+. /usr/local/bin/vger_getenv
 
 REPORTSDIR=/m1/incoming/reclamation/clu
 BASE=${VGER_BASE}/ucladb

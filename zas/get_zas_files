@@ -2,7 +2,7 @@
 # Retrieve OCLC files from ZAS (SRLF) cross-reference processing
 
 # For cron
-BIN=/opt/local/bin
+BIN=/usr/local/bin
 . ${BIN}/vger_getenv
 
 # Must supply job of files to retrieve

@@ -1,10 +1,10 @@
 #!/bin/sh
-. /opt/local/bin/vger_getenv
+. /usr/local/bin/vger_getenv
 
 REPORTSDIR=/m1/incoming/reclamation/ucfta
 BASE=${VGER_BASE}/filmntvdb
 
-/opt/local/bin/vger_sqlplus_run ucla_preaddb ucfta_extract
+/usr/local/bin/vger_sqlplus_run ucla_preaddb ucfta_extract
 
 ${BASE}/sbin/Pmarcexport -oucfta_extract.mrc -rB -mM -tucfta_extract.out -q
 

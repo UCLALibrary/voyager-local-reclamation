@@ -1,10 +1,10 @@
 #!/bin/sh
-. /opt/local/bin/vger_getenv
+. /usr/local/bin/vger_getenv
 
 REPORTSDIR=/m1/incoming/reclamation/cleth
 BASE=${VGER_BASE}/ethnodb
 
-/opt/local/bin/vger_sqlplus_run ucla_preaddb cleth_extract
+/usr/local/bin/vger_sqlplus_run ucla_preaddb cleth_extract
 
 ${BASE}/sbin/Pmarcexport -ocleth_extract.mrc -rB -mM -tcleth_extract.out -q
 
