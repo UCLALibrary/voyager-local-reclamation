@@ -1,9 +1,8 @@
 #!/bin/sh
 # Retrieve OCLC files from ZAS (SRLF) cross-reference processing
 
-# For cron
-BIN=/usr/local/bin
-. ${BIN}/vger_getenv
+# Get voyager environment, for vars and for cron
+. `echo $HOME | sed "s/$LOGNAME/voyager/"`/.profile.local
 
 # Must supply job of files to retrieve
 if [ -z "$1" ]; then
@@ -19,7 +18,7 @@ cd ${DIR}
 
 # FTP the files from OCLC
 USER=tzas1
-PWD=`${BIN}/get_value.pl ${BIN}/oclc_credentials ${USER}`
+PWD=`${VGER_SCRIPT}/get_value.pl ${VGER_CONFIG}/oclc_credentials ${USER}`
 (
   echo "user ${USER} ${PWD}"
   echo "cd 'edx.ebsb.zas'"
@@ -36,13 +35,13 @@ CTL_FILE=load_xrefs.ctl
 # Normally just one CXREF file but OK to load all
 for LOAD_FILE in `ls -1 REPORT.*.R${JOB}.CXREF 2>/dev/null`; do
   if [ -s ${LOAD_FILE} ]; then
-    ${BIN}/vger_sqlldr_load ${SCHEMA} ${LOAD_FILE} ${CTL_FILE}
+    ${VGER_SCRIPT}/vger_sqlldr_load ${SCHEMA} ${LOAD_FILE} ${CTL_FILE}
   fi
 done
 
 # Check for xrefs for records no longer in Voyager, report to Sara Layne
 SQL=zas_matches_missing
-${BIN}/vger_sqlplus_run ${SCHEMA} ${SQL}
+${VGER_SCRIPT}/vger_sqlplus_run ${SCHEMA} ${SQL}
 if [ -s ${SQL}.out ]; then
   cat ${SQL}.out | mailx -s "ZAS xrefs no longer in Voyager" akohler@library.ucla.edu
 else
