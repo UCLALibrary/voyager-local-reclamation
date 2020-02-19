@@ -15,6 +15,7 @@ inner join ucladb.mfhd_history mh on mm.mfhd_id = mh.mfhd_id
 where (l.location_code = 'sr' or l.location_code LIKE 'srucl%')
 and bm.suppress_in_opac = 'N'
 and mm.suppress_in_opac = 'N'
+and not exists ( select * from ucladb.bib_index where bib_id = bm.bib_id and index_code = '0350' and normal_heading like 'UCOCLC%')
 and ( (mh.action_date between to_date('&start_date', 'YYYYMMDD') and to_date('&end_date 235959', 'YYYYMMDD HH24MISS')
         and mh.operator_id != 'nomelvyl'
       )
